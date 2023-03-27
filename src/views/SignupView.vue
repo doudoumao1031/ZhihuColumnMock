@@ -42,7 +42,7 @@
     </validate-form>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { defineComponent, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -50,7 +50,7 @@ import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 import createMessage from '../components/createMessage'
 
-export default {
+export default defineComponent({
     name: 'Signup',
     components: {
         ValidateInput,
@@ -85,21 +85,21 @@ export default {
             }
         ]
         const onFormSubmit = (result: boolean) => {
-            // if (result) {
-            //     const payload = {
-            //         email: formData.email,
-            //         password: formData.password,
-            //         nickName: formData.nickName
-            //     }
-            //     axios.post('/users/', payload).then(data => {
-            //         createMessage('注册成功 正在跳转登录页面', 'success')
-            //         setTimeout(() => {
-            //             router.push('/login')
-            //         }, 2000)
-            //     }).catch(e => {
-            //         console.log(e)
-            //     })
-            // }
+            if (result) {
+                const payload = {
+                    email: formData.email,
+                    password: formData.password,
+                    nickName: formData.nickName
+                }
+                axios.post('/users/', payload).then(data => {
+                    createMessage('注册成功 正在跳转登录页面', 'success')
+                    setTimeout(() => {
+                        router.push('/login')
+                    }, 2000)
+                }).catch(e => {
+                    console.log(e)
+                })
+            }
         }
         return {
             emailRules,
@@ -111,7 +111,7 @@ export default {
         }
     }
 
-}
+})
 </script>
 <style>
 .w-330 {

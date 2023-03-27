@@ -48,7 +48,7 @@ export default defineComponent({
     // },
     setup (props, context) {
         const inputRef = ref<any>()
-        const store = useStore()
+        const store = useStore<GlobalDataProps>()
         const currentUser = computed(() => store.state.user)
         const isLoading = computed(() => store.state.loading)
         const token = computed(() => store.state.token)
