@@ -13,6 +13,7 @@
             </div>
         </section>
         <h4 class="font-weight-bold text-center">发现精彩</h4>
+        <Uploader></Uploader>
         <column-list :list="list"></column-list>
         <!-- <ColumnList :list="list"></ColumnList> -->
         <!-- <button
@@ -31,10 +32,12 @@ import { useStore } from 'vuex'
 import { GlobalDataProps, ColumnProps } from '../store'
 // import ColumnList from '../components/ColumnList.vue'
 import ColumnList from '../components/ColumnList.vue'
+import Uploader from '../components/Uploader.vue'
 
 export default defineComponent({
     components: {
-        ColumnList
+        ColumnList,
+        Uploader
     },
 
     setup () {
