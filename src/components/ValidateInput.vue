@@ -1,5 +1,5 @@
 <template>
-    <div class="validate-input-container pb-3">
+    <div v-focus class="validate-input-container pb-3">
         <input type="text"
             v-if="tag!=='textarea'"
             class="form-control"
@@ -49,6 +49,15 @@ export default defineComponent({
         }
     },
     inheritAttrs: false,
+    directives: {
+        focus: {
+            mounted: (el:any) => {
+                // el.focus()
+                console.log('vFocus', el)
+                console.log('validate input props')
+            }
+        }
+    },
     setup (props, context) {
         const inputRef:IinputRef = reactive({ // reactive() 也会隐式地从它的参数中推导类型：
             // val: props.modelValue || '',

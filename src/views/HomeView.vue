@@ -13,7 +13,14 @@
             </div>
         </section>
         <h4 class="font-weight-bold text-center">发现精彩</h4>
-        <Uploader></Uploader>
+        <Uploader action="/file/upload" :beforeUpload="beforeUpload" @file-uploaded="onFileUploaded">
+            <!-- <h2>点击上传</h2> -->
+            <!-- <template #loading>
+                <div class="spinner-border" role="status">
+                </div>
+            </template> -->
+            s
+        </Uploader>
         <column-list :list="list"></column-list>
         <!-- <ColumnList :list="list"></ColumnList> -->
         <!-- <button
@@ -29,10 +36,11 @@
 import { defineComponent, reactive, ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import { GlobalDataProps, ColumnProps } from '../store'
+import { GlobalDataProps, ResponseType, ImageProps } from '../store'
 // import ColumnList from '../components/ColumnList.vue'
 import ColumnList from '../components/ColumnList.vue'
 import Uploader from '../components/Uploader.vue'
+import createMessage from '@/components/createMessage'
 
 export default defineComponent({
     components: {
@@ -48,18 +56,22 @@ export default defineComponent({
         })
         const list = computed(() => { return store.state.columns })
         const biggerColumnsLen = computed(() => { return store.getters.biggerColumnsLen })
-        // const list = ref<ColumnProps[]>([
-        //     {
-        //         id: 1,
-        //         title: 'PPT实验小学',
-        //         avatar: 'https://pica.zhimg.com/v2-3c98b959c2582947850cd69f144d3f03_l.jpg?source=d16d100b',
-        //         description: '各种稀奇古怪的装逼技能，或许你可以试试~'
-        //     }
-        // ])
+        const beforeUpload = (file: File) => {
+            const isJPG = file.type === 'image/jpeg'
+            if (!isJPG) {
+                createMessage('上传图片只能是JPG格式', 'error')
+            }
+            return isJPG
+        }
+        const onFileUploaded = (rawData: ResponseType<ImageProps>) => {
+            createMessage(`上传图片ID ${rawData.data._id}`, 'success')
+        }
         return {
             route,
             list: list,
-            biggerColumnsLen
+            biggerColumnsLen,
+            beforeUpload,
+            onFileUploaded
         }
     }
 })

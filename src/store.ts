@@ -7,13 +7,19 @@ import { createStore, Commit } from 'vuex'
 import axios from 'axios'
 // import { testData, testPosts } from './testData'
 
+export interface ResponseType<p = unknown> {
+    code: number;
+    msg: string;
+    data: p;
+}
+
 export interface UserProps {
     isLogin: boolean;
     name?: string;
     id?: number;
     columnId?: string;
 }
-interface ImageProps {
+export interface ImageProps {
     _id?: string;
     url?: string;
     createdAt?: string;
