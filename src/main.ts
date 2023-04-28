@@ -15,14 +15,14 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use((response) => {
     setTimeout(() => {
         store.commit('setLoading', false) // 加载变量控制
-    }, 2000)
+    }, 500)
     // store.commit('setLoading', false) // 加载变量控制
     // console.log('interceptors.response')
     return response
 }, (e) => {
     // console.log(e.response)
     const { error } = e.response.data
-    // console.log('axios', e.response, e.response.data, e.response.statusText)
+    console.log('axios', e.response, e.response.data, e.response.statusText)
     store.commit('setError', { status: true, message: e.response.statusText })
     store.commit('setLoading', false)
     return Promise.reject(error)

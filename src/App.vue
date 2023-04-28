@@ -46,19 +46,12 @@ export default defineComponent({
     //         console.log(this.$refs.inputRef)
     //     }
     // },
-    setup (props, context) {
-        const inputRef = ref<any>()
+    setup () {
         const store = useStore<GlobalDataProps>()
         const currentUser = computed(() => store.state.user)
         const isLoading = computed(() => store.state.loading)
-        const token = computed(() => store.state.token)
         const error = computed(() => store.state.error)
-        onMounted(() => {
-            if (!currentUser.value.isLogin && token.value) {
-                axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
-                store.dispatch('fetchCurrentUser')
-            }
-        })
+
         watch(() => error.value.status, () => {
             const { status, message } = error.value
             if (status && message) {
@@ -67,7 +60,6 @@ export default defineComponent({
         })
         return {
             currentUser: currentUser,
-            inputRef,
             isLoading,
             error
         }

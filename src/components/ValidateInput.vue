@@ -53,8 +53,8 @@ export default defineComponent({
         focus: {
             mounted: (el:any) => {
                 // el.focus()
-                console.log('vFocus', el)
-                console.log('validate input props')
+                // console.log('vFocus', el)
+                // console.log('validate input props')
             }
         }
     },

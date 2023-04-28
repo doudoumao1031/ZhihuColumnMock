@@ -4,8 +4,8 @@
         <validate-form @form-submit="onFormSubmit">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">电子邮件</label>
-                <validate-input type="text" placeholder="请输入邮箱地址" v-model="emailVal" :rules="emailRules" ref="inputRef"></validate-input>
-                <validate-input type="password" placeholder="请输入密码" v-model="passwordVal" :rules="passwordRules"></validate-input>
+                <validate-input type="text" placeholder="请输入邮箱地址 123@qq.com" v-model="emailVal" :rules="emailRules" ref="inputRef"></validate-input>
+                <validate-input type="password" placeholder="请输入密码 123" v-model="passwordVal" :rules="passwordRules"></validate-input>
                 <!-- {{emailVal}} -->
             </div>
             <template #submit>

@@ -4,7 +4,7 @@
 //     PostProps[],
 // }
 import { createStore, Commit } from 'vuex'
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 // import { testData, testPosts } from './testData'
 
 export interface ResponseType<p = unknown> {
@@ -12,17 +12,23 @@ export interface ResponseType<p = unknown> {
     msg: string;
     data: p;
 }
-
+export interface Avator {
+    _id?: string;
+    url?: string;
+}
 export interface UserProps {
     isLogin: boolean;
     name?: string;
-    id?: number;
+    _id?: string;
     columnId?: string;
+    avatar?: Avator;
+    description?: string;
 }
 export interface ImageProps {
     _id?: string;
     url?: string;
     createdAt?: string;
+    fitUrl?: string;
 }
 // 这儿嵌套了接口
 export interface ColumnProps {
@@ -35,10 +41,12 @@ export interface ColumnProps {
 export interface PostProps {
     _id: number;
     title: string;
-    content: string;
-    image?: string;
-    createdAt: string;
+    excerpt?: string;
+    content?: string;
+    image?: ImageProps | string;
+    createdAt?: string;
     columnId: string;
+    author?: UserProps | string;
 }
 
 export interface GlobalErrorProps {
@@ -57,13 +65,21 @@ export interface GlobalDataProps {
 const getAndCommit = async (url:string, mutationName:string, commit:Commit) => {
     // commit('setLoading', true)
     const { data } = await axios.get(url)
+    // console.log(mutationName, data)
     // 模拟延时
     // await new Promise(resolve => setTimeout(resolve, 2000))
     commit(mutationName, data)
     // commit('setLoading', false)
+    return data
 }
 const postAndCommit = async (url:string, mutationName:string, commit:Commit, payload:any) => {
     const { data } = await axios.post(url, payload)
+    commit(mutationName, data)
+    return data
+}
+const asyncAndCommit = async (url:string, mutationName:string, commit:Commit, config:AxiosRequestConfig = { method: 'get' }) => {
+    const { data, msg } = await axios(url, config)
+    console.log('axios async', url, config, data, msg)
     commit(mutationName, data)
     return data
 }
@@ -95,7 +111,21 @@ const store = createStore<GlobalDataProps>({
             state.columns = [rawData.data]
         },
         fetchPosts (state, rawData) {
-            state.posts = rawData.data.list
+            // console.log('fetchPosts', rawData)
+            state.posts = rawData.data
+        },
+        updatePost (state, { data }) {
+            state.posts = state.posts.map(post => {
+                if (post._id === data._id) {
+                    return data
+                } else {
+                    return post
+                }
+            })
+        },
+        deletePost (state, { data }) {
+            // console.log('fetchPosts', rawData)
+            state.posts = state.posts.filter(post => post._id !== data._id)
         },
         setLoading (state, status) {
             state.loading = status
@@ -110,6 +140,11 @@ const store = createStore<GlobalDataProps>({
             state.token = token
             localStorage.setItem('token', token)
             axios.defaults.headers.common.Authorization = `Bearer ${token}`
+        },
+        logout (state, rawData) {
+            state.token = ''
+            localStorage.remove('token')
+            delete axios.defaults.headers.common.Authorization
         },
         fetchCurrentUser (state, rawData) {
             state.user = { isLogin: true, ...rawData.data }
@@ -140,23 +175,39 @@ const store = createStore<GlobalDataProps>({
         fetchColumns ({ commit }) {
             // const { data } = await axios.get('/columns')
             // commit('fetchColumns', data)
-            getAndCommit('/columns', 'fetchColumns', commit)
+            return getAndCommit('/columns', 'fetchColumns', commit)
         },
         fetchColumn ({ commit }, cid) {
             // const { data } = await axios.get(`/columns/${cid}`)
             // commit('fetchColumn', data)
-            getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
+            return getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
         },
         fetchPosts ({ commit }, cid) {
             // const { data } = await axios.get(`/columns/${cid}/posts`)
+            // console.log('fetchPosts', cid)
+            // const { data } = await axios.get(`/posts/${cid}`)
             // commit('fetchPosts', data)
-            getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
+            return getAndCommit(`/posts/${cid}`, 'fetchPosts', commit)
         },
         login ({ commit }, payload) {
             return postAndCommit('/user/login', 'login', commit, payload)
         },
-        fetchCurrnetUser ({ commit }) {
-            getAndCommit('/user/current', 'fetchCurrentUser', commit)
+        fetchCurrentUser ({ commit }) {
+            return getAndCommit('/user/current', 'fetchCurrentUser', commit)
+        },
+        createPost ({ commit }, payload) {
+            return postAndCommit('/posts', 'createPost', commit, payload)
+        },
+        updatePost ({ commit }, { id, payload }) {
+            asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {
+                method: 'patch',
+                data: payload
+            })
+        },
+        deletePost ({ commit }, id) {
+            asyncAndCommit(`/posts/${id}`, 'deletePost', commit, {
+                method: 'delete'
+            })
         },
         // 组合Action
         loginAndFetch ({ dispatch }, loginData) {
@@ -178,6 +229,28 @@ const store = createStore<GlobalDataProps>({
             return (cid:string) => {
                 // console.log(cid, state.posts)
                 return state.posts.filter(post => post.columnId === cid)
+            }
+        },
+        getPostByPid: (state) => {
+            return (pid:string) => {
+                // console.log(pid, state.posts)
+                return state.posts.filter(post => String(post._id) === pid)[0]
+            }
+        },
+        getCurrentPost: (state) => {
+            return (cid:string) => {
+                // console.log(cid, state.posts)
+                return state.posts.filter((post) => {
+                    // console.log(post._id, cid, (String(post._id) === cid))
+                    return String(post._id) === cid
+                })[0]
+                // for (let i = 0; i < state.posts.length; i++) {
+                //     const post = state.posts[i]
+                //     console.log(post)
+                //     if (String(post._id) === cid) {
+                //         return post
+                //     }
+                // }
             }
         }
     }

@@ -6,7 +6,8 @@
                     <img src="../assets/callout.svg" alt="callout" class="w-50"/>
                     <h2 class="font-weight-light">随心写作，自由表达</h2>
                     <p>
-                        <a href="#" class="btn btn-primary my-2">开始写文章</a>
+                        <!-- <a href="#" class="btn btn-primary my-2">开始写文章</a> -->
+                        <router-link class="btn btn-primary my-2" :to="{name: 'createpost'}">开始写文章</router-link>
                         <!-- {{biggerColumnsLen}} -->
                     </p>
                 </div>
@@ -19,7 +20,6 @@
                 <div class="spinner-border" role="status">
                 </div>
             </template> -->
-            s
         </Uploader>
         <column-list :list="list"></column-list>
         <!-- <ColumnList :list="list"></ColumnList> -->
